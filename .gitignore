@@ -1,0 +1,5 @@
+to_do_list/to_do_list/secret_settings.py
+venv
+.idea
+django_to_do_list.iml
+to_do_list/db.sqlite3
