@@ -5,7 +5,7 @@
 <p>&lt;List of to-do lists&gt;</p>
 {% else %}
 <p>It seems like you're not logged in yet!</p>
-<a href="{% url 'login' %}">Log in</a>
+<p><a href="{% url 'login' %}">Log in</a> | <a href="{% url 'registration' %}">Register</a></p>
 {% endif %}
 </body>
 </html>

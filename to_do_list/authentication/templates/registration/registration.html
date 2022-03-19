@@ -1,10 +1,5 @@
-<html>
-<body>
-<h2>Registration page</h2>
-<form method="post">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit">Register</button>
-</form>
-</body>
-</html>
+{% extends 'registration/basic_form_page.html' %}
+
+{% block title %}Registration page{% endblock %}
+{% block first_button_url %}{% url 'login' %}{% endblock %}
+{% block first_button_text %}Oops, I wanted to log in!{% endblock %}
