@@ -1,9 +1,11 @@
 <html>
 <body>
 {% if user.is_authenticated %}
-Auth
+<p>{{user.username}} | <a href="{% url 'logout' %}">Log out</a></p>
+<p>&lt;List of to-do lists&gt;</p>
 {% else %}
-No auth
+<p>It seems like you're not logged in yet!</p>
+<a href="{% url 'login' %}">Log in</a>
 {% endif %}
 </body>
 </html>
