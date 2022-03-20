@@ -2,7 +2,11 @@
 {% block contents %}
 {% if user.is_authenticated %}
 <p>{{user.username}} | <a href="{% url 'logout' %}">Log out</a></p>
-<p>&lt;List of to-do lists&gt;</p>
+<ul>
+    {% for to_do_list in user.to_do_list_set %}
+    <li>{ to_do_list.title }</li>
+    {% endfor %}
+</ul>
 {% else %}
 <p>It seems like you're not logged in yet!</p>
 <p><a href="{% url 'login' %}">Log in</a> | <a href="{% url 'registration' %}">Register</a></p>
