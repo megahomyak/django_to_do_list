@@ -4,7 +4,7 @@
 <form method="post">
     {% csrf_token %}
     {{ form.as_p }}
-    <button type="submit">Register</button>
+    <button type="submit">{% block action_button_text %}{% endblock %}</button>
 </form>
 <p><a href="{% block first_button_url %}{% endblock %}">{% block first_button_text %}{% endblock %}</a></p>
 <p><a href="{% url 'index' %}">Take me back home!</a></p>
