@@ -1,5 +1,5 @@
-<html>
-<body>
+{% extends 'generic_page.html' %}
+{% block contents %}
 <h2>{% block title %}{% endblock %}</h2>
 <form method="post">
     {% csrf_token %}
@@ -8,5 +8,4 @@
 </form>
 <p><a href="{% block first_button_url %}{% endblock %}">{% block first_button_text %}{% endblock %}</a></p>
 <p><a href="{% url 'index' %}">Take me back home!</a></p>
-</body>
-</html>
+{% endblock %}
