@@ -7,7 +7,7 @@ class ToDoList(models.Model):
     owner = models.ForeignKey(User, on_delete=models.CASCADE)
 
 
-class ToDoListElement(models.Model):
+class ToDoListItem(models.Model):
     title = models.TextField()
     is_done = models.BooleanField()
     to_do_list = models.ForeignKey(ToDoList, on_delete=models.CASCADE)
