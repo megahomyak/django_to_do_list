@@ -55,12 +55,15 @@
         }
     }
 
-    fetchWithShowingErrorToUser("{% url 'to_do_list:get_to_do_lists' %}").then(
-        (to_do_lists) => {
-            for (let to_do_list of to_do_lists) {
-                addToDoList(to_do_list, "beforeend");
+    window.addEventListener(
+        "DOMContentLoaded",
+        () => fetchWithShowingErrorToUser("{% url 'to_do_list:get_to_do_lists' %}").then(
+            (to_do_lists) => {
+                for (let to_do_list of to_do_lists) {
+                    addToDoList(to_do_list, "beforeend");
+                }
             }
-        }
+        ),
     );
 </script>
 <form id="to_do_list_creation_form" action="javascript:createToDoList()" method="post">
