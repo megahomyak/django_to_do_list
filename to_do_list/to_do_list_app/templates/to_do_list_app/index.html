@@ -2,9 +2,52 @@
 {% block contents %}
 {% if user.is_authenticated %}
 <p>{{user.username}} | <a href="{% url 'logout' %}">Log out</a></p>
-<ul>
-    {% for to_do_list in user.to_do_list_set %}
-    <li>{ to_do_list.title }</li>
+<p id="error_field" style="color:red" hidden><strong></strong></p>
+<script>
+    function setError(error_text) {
+        if (error_text) {
+            error_field.hidden = false;
+            error_field.children[0].innerText = error_text;
+        } else {
+            error_field.hidden = true;
+            error_field.children[0].innerText = "";
+        }
+    }
+
+    function createToDoList() {
+        let title = to_do_list_creation_form.elements["title"];
+        if (title) {
+            fetch("{% url 'to_do_list:create' %}", {
+                method: "POST",
+                body: new FormData(to_do_list_creation_form),
+            })
+                .then(response => response.json())
+                .then(to_do_list_info => {
+                    if to_do_list_info.error {
+                        setError(to_do_list_info.error);
+                    } else {
+                        setError("");
+                        let list_item = document.createElement("li");
+                        let hyperlink = document.createElement("a");
+                        hyperlink.href = `to_do_list/view/${to_do_list_info.id}`
+                        hyperlink.append(title);
+                        list_item.append(hyperlink);
+                        to_do_lists.insertAdjacentElement("afterbegin", list_item);
+                    }
+                })
+                .catch(error => setError(`An error occured: ${error}`))
+        } else {
+            setError("You haven't provided a title for a to-do list!");
+        }
+    }
+</script>
+<form id="to_do_list_creation_form" action="javascript:createToDoList()" method="post">
+    {% csrf_token %}
+    <input type="text" name="title"/><input type="submit" value="Create new to-do list">
+</form>
+<ul id="to_do_lists">
+    {% for to_do_list in user.todolist_set.all %}
+    <li><a href="{% url 'to_do_list:view' to_do_list.pk %}">{{ to_do_list.title }}</a></li>
     {% endfor %}
 </ul>
 {% else %}
