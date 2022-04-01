@@ -15,7 +15,7 @@
     }
 
     function createToDoList() {
-        let title = to_do_list_creation_form.elements["title"];
+        let title = to_do_list_creation_form.elements["title"].value;
         if (title) {
             fetch("{% url 'to_do_list:create' %}", {
                 method: "POST",
@@ -23,7 +23,7 @@
             })
                 .then(response => response.json())
                 .then(to_do_list_info => {
-                    if to_do_list_info.error {
+                    if (to_do_list_info.error) {
                         setError(to_do_list_info.error);
                     } else {
                         setError("");

@@ -1,5 +1,6 @@
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import render, redirect, get_object_or_404
+from django.http import JsonResponse
+from django.shortcuts import render, get_object_or_404
 
 from . import models
 
@@ -11,15 +12,17 @@ def create_to_do_list(request):
         if not to_do_list_title:
             raise KeyError
     except KeyError:
-        return render(request, "to_do_list_app/index.html", {
-            "error_message": "You haven't provided a title for a to-do list!"
+        return JsonResponse({
+            "error": "You haven't provided a title for a to-do list!"
         })
     else:
         # noinspection PyUnresolvedReferences
-        models.ToDoList.objects.create(
+        to_do_list = models.ToDoList.objects.create(
             title=to_do_list_title, owner=request.user,
         )
-        return redirect("index")
+        return JsonResponse({
+            "id": to_do_list.pk,
+        })
 
 
 @login_required
