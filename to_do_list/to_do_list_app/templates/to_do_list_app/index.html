@@ -14,42 +14,60 @@
         }
     }
 
-    function createToDoList() {
+    function addToDoList(to_do_list, where="afterbegin") {
+        let list_item = document.createElement("li");
+        let hyperlink = document.createElement("a");
+        hyperlink.href = `to_do_list/view/${to_do_list.id}`
+        hyperlink.append(to_do_list.title);
+        list_item.append(hyperlink);
+        to_do_lists.insertAdjacentElement(where, list_item);
+    }
+
+    async function fetchWithShowingErrorToUser(url, parameters) {
+        try {
+            let response = await fetch(url, parameters);
+            return await response.json();
+        } catch (error) {
+            setError(error);
+        }
+    }
+
+    async function createToDoList() {
         let title = to_do_list_creation_form.elements["title"].value;
         if (title) {
-            fetch("{% url 'to_do_list:create' %}", {
-                method: "POST",
-                body: new FormData(to_do_list_creation_form),
-            })
-                .then(response => response.json())
-                .then(to_do_list_info => {
-                    if (to_do_list_info.error) {
-                        setError(to_do_list_info.error);
-                    } else {
-                        setError("");
-                        let list_item = document.createElement("li");
-                        let hyperlink = document.createElement("a");
-                        hyperlink.href = `to_do_list/view/${to_do_list_info.id}`
-                        hyperlink.append(title);
-                        list_item.append(hyperlink);
-                        to_do_lists.insertAdjacentElement("afterbegin", list_item);
-                    }
-                })
-                .catch(error => setError(`An error occured: ${error}`))
+            let to_do_list_info = await fetchWithShowingErrorToUser(
+                "{% url 'to_do_list:create' %}", {
+                    method: "POST",
+                    body: new FormData(to_do_list_creation_form),
+                }
+            );
+            if (to_do_list_info.error) {
+                setError(to_do_list_info.error);
+            } else {
+                setError("");
+                addToDoList({
+                    id: to_do_list_info.id,
+                    title,
+                });
+            }
         } else {
             setError("You haven't provided a title for a to-do list!");
         }
     }
+
+    fetchWithShowingErrorToUser("{% url 'to_do_list:get_to_do_lists' %}").then(
+        (to_do_lists) => {
+            for (let to_do_list of to_do_lists) {
+                addToDoList(to_do_list, "beforeend");
+            }
+        }
+    );
 </script>
 <form id="to_do_list_creation_form" action="javascript:createToDoList()" method="post">
     {% csrf_token %}
     <input type="text" name="title"/><input type="submit" value="Create new to-do list">
 </form>
-<ul id="to_do_lists">
-    {% for to_do_list in user.todolist_set.all %}
-    <li><a href="{% url 'to_do_list:view' to_do_list.pk %}">{{ to_do_list.title }}</a></li>
-    {% endfor %}
-</ul>
+<ul id="to_do_lists"></ul>
 {% else %}
 <p>It seems like you're not logged in yet!</p>
 <p><a href="{% url 'login' %}">Log in</a> | <a href="{% url 'registration' %}">Register</a></p>

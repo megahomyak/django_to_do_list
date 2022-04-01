@@ -35,3 +35,11 @@ def view_to_do_list(request, to_do_list_id):
             "to_do_list_app/inaccessible_to_do_list.html"
         )
     )
+
+
+@login_required
+def get_to_do_lists(request):
+    return JsonResponse([
+        {"id": to_do_list.pk, "title": to_do_list.title}
+        for to_do_list in request.user.todolist_set.all()
+    ], safe=False)
