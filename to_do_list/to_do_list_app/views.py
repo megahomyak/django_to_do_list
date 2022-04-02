@@ -52,8 +52,6 @@ def delete_to_do_list(request, to_do_list_id):
     to_do_list = get_object_or_404(models.ToDoList, to_do_list_id)
     if request.user == to_do_list.owner:
         to_do_list.delete()
-        return JsonResponse({"a": "b"})  # Tried this
-        return HttpResponse("a")  # Tried that
         return HttpResponse(
             "a", status=http.HTTPStatus.NO_CONTENT, content_type="text/plain"
         )  # And also tried that - none of them work as intended,
