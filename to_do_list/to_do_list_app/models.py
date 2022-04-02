@@ -19,6 +19,7 @@ class ToDoList(models.Model):
 class ToDoListItem(models.Model):
     title = models.TextField()
     is_done = models.BooleanField()
+    order = models.IntegerField()
     to_do_list = models.ForeignKey(ToDoList, on_delete=models.CASCADE)
 
     def __str__(self):
