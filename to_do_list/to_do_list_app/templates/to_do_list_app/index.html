@@ -9,7 +9,7 @@
     <input type="text" name="title"/><input type="submit" value="Create new to-do list">
 </form>
 <p id="error_field" style="color:red" hidden><strong></strong></p>
-<ul id="to_do_lists"></ul>
+<ol id="to_do_lists"></ol>
 {% else %}
 <p>It seems like you're not logged in yet!</p>
 <p><a href="{% url 'login' %}">Log in</a> | <a href="{% url 'registration' %}">Register</a></p>
