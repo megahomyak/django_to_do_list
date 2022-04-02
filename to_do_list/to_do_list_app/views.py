@@ -1,7 +1,5 @@
-import http
-
 from django.contrib.auth.decorators import login_required
-from django.http import JsonResponse, HttpResponse
+from django.http import JsonResponse
 from django.shortcuts import render, get_object_or_404
 
 from . import models
@@ -49,14 +47,10 @@ def get_to_do_lists(request):
 
 @login_required
 def delete_to_do_list(request, to_do_list_id):
-    to_do_list = get_object_or_404(models.ToDoList, to_do_list_id)
+    to_do_list = get_object_or_404(models.ToDoList, pk=to_do_list_id)
     if request.user == to_do_list.owner:
         to_do_list.delete()
-        return HttpResponse(
-            "a", status=http.HTTPStatus.NO_CONTENT, content_type="text/plain"
-        )  # And also tried that - none of them work as intended,
-        # all of them return 200 with <html><head></head><body></body></html>
-        # in their body. IDK WTF
+        return JsonResponse({})
     else:
         return JsonResponse({
             "error": "This to-do list is not yours!"

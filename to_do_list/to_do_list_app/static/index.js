@@ -19,7 +19,6 @@ async function deleteToDoListCallback(event) {
             event.target.parentElement.remove();
         }
     }
-    return false;
 }
 
 async function addToDoList(toDoList, where="afterbegin") {
@@ -28,13 +27,12 @@ async function addToDoList(toDoList, where="afterbegin") {
     viewHyperlink.href = `to_do_list/view/${toDoList.id}`;
     viewHyperlink.append(toDoList.title);
     listItem.append(viewHyperlink);
-    let deletionHyperlink = document.createElement("a");
-    deletionHyperlink.dataset.to_do_list_id = toDoList.id;
-    deletionHyperlink.href = "#";
-    deletionHyperlink.addEventListener("click", deleteToDoListCallback);
-    deletionHyperlink.append("Delete");
-    listItem.append(" | ");
-    listItem.append(deletionHyperlink);
+    let deleteButton = document.createElement("button");
+    deleteButton.append("Delete");
+    deleteButton.style["margin-left"] = "0.5em";
+    deleteButton.dataset.to_do_list_id = toDoList.id;
+    deleteButton.addEventListener("click", deleteToDoListCallback);
+    listItem.append(deleteButton);
     to_do_lists.insertAdjacentElement(where, listItem);
 }
 
@@ -42,13 +40,7 @@ async function fetchWithShowingErrorToUser(url, parameters) {
     try {
         let response = await fetch(url, parameters);
         if (response.ok) {
-            let body = await response.text();
-            alert(body);
-            if (body == "") {
-                return null;
-            } else {
-                return JSON.parse(body);
-            }
+            return await response.json();
         } else {
             throw new Error(`${response.status} (${response.statusText})`);
         }
