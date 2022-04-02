@@ -1,75 +1,14 @@
 {% extends 'generic_page.html' %}
 {% block contents %}
+{% load static %}
 {% if user.is_authenticated %}
 <p>{{user.username}} | <a href="{% url 'logout' %}">Log out</a></p>
-<p id="error_field" style="color:red" hidden><strong></strong></p>
-<script>
-    function setError(error_text) {
-        if (error_text) {
-            error_field.hidden = false;
-            error_field.children[0].innerText = error_text;
-        } else {
-            error_field.hidden = true;
-            error_field.children[0].innerText = "";
-        }
-    }
-
-    function addToDoList(to_do_list, where="afterbegin") {
-        let list_item = document.createElement("li");
-        let hyperlink = document.createElement("a");
-        hyperlink.href = `to_do_list/view/${to_do_list.id}`
-        hyperlink.append(to_do_list.title);
-        list_item.append(hyperlink);
-        to_do_lists.insertAdjacentElement(where, list_item);
-    }
-
-    async function fetchWithShowingErrorToUser(url, parameters) {
-        try {
-            let response = await fetch(url, parameters);
-            return await response.json();
-        } catch (error) {
-            setError(error);
-        }
-    }
-
-    async function createToDoList() {
-        let title = to_do_list_creation_form.elements["title"].value;
-        if (title) {
-            let to_do_list_info = await fetchWithShowingErrorToUser(
-                "{% url 'to_do_list:create' %}", {
-                    method: "POST",
-                    body: new FormData(to_do_list_creation_form),
-                }
-            );
-            if (to_do_list_info.error) {
-                setError(to_do_list_info.error);
-            } else {
-                setError("");
-                addToDoList({
-                    id: to_do_list_info.id,
-                    title,
-                });
-            }
-        } else {
-            setError("You haven't provided a title for a to-do list!");
-        }
-    }
-
-    window.addEventListener(
-        "DOMContentLoaded",
-        () => fetchWithShowingErrorToUser("{% url 'to_do_list:get_to_do_lists' %}").then(
-            (to_do_lists) => {
-                for (let to_do_list of to_do_lists) {
-                    addToDoList(to_do_list, "beforeend");
-                }
-            }
-        ),
-    );
-</script>
+<script src="{% static 'index.js' %}"></script>
 <form id="to_do_list_creation_form" action="javascript:createToDoList()" method="post">
     {% csrf_token %}
     <input type="text" name="title"/><input type="submit" value="Create new to-do list">
 </form>
+<p id="error_field" style="color:red" hidden><strong></strong></p>
 <ul id="to_do_lists"></ul>
 {% else %}
 <p>It seems like you're not logged in yet!</p>
