@@ -3,13 +3,8 @@
 {% load static %}
 {% if user.is_authenticated %}
 <p>{{user.username}} | <a href="{% url 'logout' %}">Log out</a></p>
+{% include 'frontend_app/generic_list.html' %}
 <script src="{% static 'index.js' %}"></script>
-<form id="to_do_list_creation_form" action="javascript:createToDoList()" method="post">
-    {% csrf_token %}
-    <input type="text" name="title"/><input type="submit" value="Create new to-do list">
-</form>
-<p id="error_field" style="color:red" hidden><strong></strong></p>
-<ol id="to_do_lists"></ol>
 {% else %}
 <p>It seems like you're not logged in yet!</p>
 <p><a href="{% url 'login' %}">Log in</a> | <a href="{% url 'registration' %}">Register</a></p>

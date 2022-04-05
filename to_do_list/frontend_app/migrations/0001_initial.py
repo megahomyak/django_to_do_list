@@ -28,7 +28,7 @@ class Migration(migrations.Migration):
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('title', models.TextField()),
                 ('is_done', models.BooleanField()),
-                ('to_do_list', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='to_do_list_app.todolist')),
+                ('to_do_list', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='frontend_app.todolist')),
             ],
         ),
     ]

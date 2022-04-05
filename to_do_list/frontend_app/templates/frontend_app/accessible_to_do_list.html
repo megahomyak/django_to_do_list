@@ -1,0 +1,8 @@
+{% extends 'generic_page.html' %}
+{% block contents %}
+{% load static %}
+<h1>{{ title }}</h1>
+{% include 'frontend_app/generic_list.html' %}
+<script>let toDoListId = {{ to_do_list_id }};</script>
+<script src="{% static 'accessible_to_do_list.js' %}"></script>
+{% endblock %}

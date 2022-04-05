@@ -10,9 +10,12 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.0/ref/settings/
 """
 
+import mimetypes
 from pathlib import Path
 
 from . import secret_settings
+
+mimetypes.add_type("text/javascript", ".js", True)
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -37,7 +40,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'to_do_list_app.apps.ToDoListAppConfig',
+    'frontend_app.apps.FrontendAppConfig',
+    'api.apps.ApiConfig',
     'authentication.apps.AuthenticationConfig',
 ]
 
