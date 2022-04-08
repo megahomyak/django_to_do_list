@@ -1,6 +1,8 @@
 class ListOfToDoLists extends GenericList {
+    readableListElementName = "to-do list";
+    postRequestsElementIdFieldName = "to_do_list_id";
     getDeletionURL(itemId) {
-        return `/api/to_do_lists/${itemId}/delete/`;
+        return "/api/to_do_lists/delete/";
     }
 
     getCreationURL(itemId) {
@@ -19,7 +21,5 @@ class ListOfToDoLists extends GenericList {
     }
 }
 
-let list_object = new ListOfToDoLists({
-    readableListElementName: "to-do list",
-});
-list_object.bind();
+let listObject = new ListOfToDoLists;
+listObject.bind();

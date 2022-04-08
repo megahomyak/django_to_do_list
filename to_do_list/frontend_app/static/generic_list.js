@@ -3,10 +3,7 @@ class GenericList {
     errorFieldName = "error_field";
     listElementName = "list";
     listElementsCreationFormName = "list_elements_creation_form";
-
-    constructor(props) {
-        Object.assign(this, props);
-    }
+    postRequestsElementIdFieldName = undefined;
 
     getDeletionURL(itemId) {
         return undefined;
@@ -24,11 +21,17 @@ class GenericList {
         if (confirm(
             `Do you really want to delete this ${this.readableListElementName}?`
         )) {
+            let request_form = new FormData();
+            request_form.append("csrfmiddlewaretoken", csrfMiddlewareToken);
+            request_form.append(this.postRequestsElementIdFieldName, event.target.dataset.item_id);
             let response = await this.fetchWithShowingErrorToUser(
-                this.getDeletionURL(event.target.dataset.item_id)
+                this.getDeletionURL(), {
+                    method: "POST",
+                    body: request_form,
+                }
             );
             if (response.error) {
-                setError(response.error);
+                this.setError(response.error);
             } else {
                 event.target.parentElement.remove();
             }
@@ -63,7 +66,6 @@ class GenericList {
         listItem.append(deleteButton);
         let list = document.getElementById(this.listElementName);
         list.insertAdjacentElement(where, listItem);
-        deleteButton.style.position = "static";
         return listItem;
     }
 
@@ -126,3 +128,5 @@ class GenericList {
         );
     }
 }
+
+const csrfMiddlewareToken = document.querySelector('[name=csrfmiddlewaretoken]').value;

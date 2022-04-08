@@ -85,7 +85,11 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': BASE_DIR / 'db.sqlite3',
-    }
+    },
+    # If I'm gonna use postgres:
+    # "OPTIONS": {
+    #     "isolation_level": psycopg2.extensions.ISOLATION_LEVEL_SERIALIZABLE,
+    # }
 }
 
 

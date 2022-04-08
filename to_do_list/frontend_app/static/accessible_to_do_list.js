@@ -1,4 +1,12 @@
 class ToDoList extends GenericList {
+    readableListElementName = "task";
+    postRequestsElementIdFieldName = "task_id";
+
+    constructor(toDoListId) {
+        super();
+        this.toDoListId = toDoListId;
+    }
+
     addListElement(listElement, where="afterbegin") {
         let listItem = super.addListElement(...arguments);
         listItem.children[0].addEventListener(
@@ -6,18 +14,18 @@ class ToDoList extends GenericList {
         );
     }
 
-    getDeletionURL(itemId) {
-        return `/api/tasks/${itemId}/delete`;
-    }
-
-    getCreationURL() {
-        return `/api/tasks/create`;
-    }
-
     getCreationFormData(listElementsCreationForm) {
         let form_data = new FormData(listElementsCreationForm);
         form_data.append("to_do_list_id", this.toDoListId);
         return form_data;
+    }
+
+    getDeletionURL(itemId) {
+        return "/api/tasks/delete";
+    }
+
+    getCreationURL() {
+        return "/api/tasks/create";
     }
 
     getGetterURL() {
@@ -29,8 +37,5 @@ class ToDoList extends GenericList {
     }
 }
 
-let list_object = new ToDoList({
-    toDoListId: toDoListId,
-    readableListElementName: "task",
-});
-list_object.bind();
+let listObject = new ToDoList(toDoListId);
+listObject.bind();

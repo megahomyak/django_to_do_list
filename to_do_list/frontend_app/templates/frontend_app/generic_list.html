@@ -1,8 +1,9 @@
 {% load static %}
-<form id="list_elements_creation_form" action="javascript:list_object.createElement()" method="post">
+<form id="list_elements_creation_form" action="javascript:listObject.createElement()" method="post">
     {% csrf_token %}
     <input type="text" name="title"/><input type="submit" value="{{ creation_button_text }}">
 </form>
 <p id="error_field" style="color:red" hidden><strong></strong></p>
 <ol id="list"></ol>
+{% csrf_token %}
 <script src="{% static 'generic_list.js' %}"></script>
