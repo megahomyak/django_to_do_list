@@ -5,18 +5,6 @@ from django.contrib.auth.models import User
 from . import models
 
 
-class UsersFixture:
-
-    # noinspection PyPep8Naming
-    @classmethod
-    def setUpTestData(cls):
-        users = []
-        for username in ("first", "second"):
-            user = User.objects.create_user(username)
-            users.append(user)
-        cls.first_user, cls.second_user = users
-
-
 def checkers_mixin_methods_generator(http_status):
     return lambda self, request: self.assertEqual(
         request.status_code, http_status
@@ -36,8 +24,16 @@ class StatusCodeCheckersMixin:
     )
 
 
-class GenericTestsMixin(UsersFixture, StatusCodeCheckersMixin):
-    client = None  # To make my linter shut up
+class UsersFixture(StatusCodeCheckersMixin):
+
+    # noinspection PyPep8Naming
+    @classmethod
+    def setUpTestData(cls):
+        users = []
+        for username in ("first", "second"):
+            user = User.objects.create_user(username)
+            users.append(user)
+        cls.first_user, cls.second_user = users
 
 
 class ToDoListsFixture(UsersFixture):
