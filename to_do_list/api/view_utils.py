@@ -7,9 +7,12 @@ from django.shortcuts import get_object_or_404
 
 from . import models
 
+UNACCESSIBLE_TASK_ERROR_TEXT = "This task is not yours!"
+UNACCESSIBLE_TO_DO_LIST_ERROR_TEXT = "This to-do list is not yours!"
+
 
 def receiver_decorators_factory(checker, error_text, model_class):
-    def post_field_setter(request_type, field_name=None):
+    def post_field_setter(request_type, field_name):
         request_type = request_type.upper()
 
         def decorator(function):
@@ -19,7 +22,7 @@ def receiver_decorators_factory(checker, error_text, model_class):
                     database_entry_id = kwargs.pop(field_name)
                 else:
                     [database_entry_id] = validate_post_integers(
-                        request, field_name
+                        request, field_name,
                     )
                 object_ = get_object_or_404(
                     model_class, pk=database_entry_id
@@ -36,19 +39,19 @@ def receiver_decorators_factory(checker, error_text, model_class):
 
 
 receive_to_do_list = receiver_decorators_factory(
-    error_text="This to-do list is not yours!", model_class=models.ToDoList,
+    error_text=UNACCESSIBLE_TO_DO_LIST_ERROR_TEXT, model_class=models.ToDoList,
     checker=lambda request, to_do_list: request.user == to_do_list.owner,
 )
 receive_task = receiver_decorators_factory(
-    error_text="This task is not yours!", model_class=models.Task,
+    error_text=UNACCESSIBLE_TASK_ERROR_TEXT, model_class=models.Task,
     checker=lambda request, task: request.user == task.to_do_list.owner,
 )
 
 
 class JsonException(Exception):
 
-    def __init__(self, error_body, status_code):
-        self.error_body = error_body
+    def __init__(self, error_body_in_json, status_code):
+        self.error_body = error_body_in_json
         self.status_code = status_code
 
 

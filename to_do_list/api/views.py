@@ -70,9 +70,10 @@ def create_task(request):
     )
     to_do_list = get_object_or_404(models.ToDoList, pk=to_do_list_id)
     if to_do_list.owner != request.user:
-        return JsonResponse({
-            "error": "To-do list which you specified doesn't belong to you!",
-        }, status=http.HTTPStatus.FORBIDDEN)
+        raise view_utils.JsonException(
+            view_utils.UNACCESSIBLE_TO_DO_LIST_ERROR_TEXT,
+            http.HTTPStatus.FORBIDDEN,
+        )
     with transaction.atomic():
         # noinspection PyUnresolvedReferences
         max_task_order = models.Task.objects.filter(
@@ -90,18 +91,16 @@ def create_task(request):
 
 
 @with_json_exceptions_and_required_login
-def change_task_order(request):
+def reorder_task(request):
     task_id, new_order = view_utils.validate_post_integers(
         request, "task_id", "new_order",
     )
     task = get_object_or_404(models.Task, pk=task_id)
     if task.to_do_list.owner != request.user:
-        return JsonResponse({
-            "error": (
-                "Task which you specified doesn't belong to any of your to-do "
-                "lists!"
-            ),
-        }, status=http.HTTPStatus.FORBIDDEN)
+        raise view_utils.JsonException(
+            view_utils.UNACCESSIBLE_TASK_ERROR_TEXT,
+            http.HTTPStatus.FORBIDDEN,
+        )
     old_order = task.order
     if old_order == new_order:
         return JsonResponse({})
@@ -120,4 +119,70 @@ def change_task_order(request):
         models.Task.objects.filter(
             to_do_list=task.to_do_list, **range_filters,
         ).update(order=F("order") + bias)
+    task.order = new_order
+    task.save()
     return JsonResponse({})
+
+
+@with_json_exceptions_and_required_login
+def change_task_state(request):
+    [task_id, new_state] = view_utils.validate_post_integers(
+        request, "task_id", "new_state",
+    )
+    if new_state not in (0, 1):
+        raise view_utils.JsonException(
+            "new_state should be between 0 and 1!", http.HTTPStatus.BAD_REQUEST,
+        )
+    task = get_object_or_404(models.Task, pk=task_id)
+    if task.to_do_list.owner != request.user:
+        raise view_utils.JsonException(
+            view_utils.UNACCESSIBLE_TASK_ERROR_TEXT,
+            http.HTTPStatus.FORBIDDEN,
+        )
+    task.is_done = bool(new_state)
+    task.save()
+    return JsonResponse({})
+
+
+def title_changers_generator(
+    record_id_field_name, records_model, unaccessible_record_error_text,
+    ownership_checker, function_name="rename_record"
+):
+    def rename_record(request):
+        [record_id, new_title] = view_utils.validate_post_strings(
+            request, record_id_field_name, "new_title",
+        )
+        try:
+            record_id = int(record_id)
+        except ValueError:
+            raise view_utils.JsonException(
+                "record_id is not an integer!", http.HTTPStatus.BAD_REQUEST,
+            ) from None
+        record = get_object_or_404(records_model, pk=record_id)
+        if not ownership_checker(request, record):
+            raise view_utils.JsonException(
+                unaccessible_record_error_text, http.HTTPStatus.FORBIDDEN,
+            )
+        record.title = new_title
+        record.save()
+        return JsonResponse({})
+    rename_record.__name__ = function_name
+    return with_json_exceptions_and_required_login(rename_record)
+
+
+rename_to_do_list = title_changers_generator(
+    record_id_field_name="to_do_list_id", records_model=models.ToDoList,
+    unaccessible_record_error_text=(
+        view_utils.UNACCESSIBLE_TO_DO_LIST_ERROR_TEXT
+    ), ownership_checker=lambda request, to_do_list: (
+        request.user == to_do_list.owner
+    ), function_name="rename_to_do_list"
+)
+rename_task = title_changers_generator(
+    record_id_field_name="task_id", records_model=models.Task,
+    unaccessible_record_error_text=(
+        view_utils.UNACCESSIBLE_TASK_ERROR_TEXT
+    ), ownership_checker=lambda request, task: (
+        request.user == task.to_do_list.owner
+    ), function_name="rename_task"
+)

@@ -15,9 +15,20 @@ class ListOfToDoLists extends GenericList {
 
     makeListItemTitle(listElement) {
         let viewHyperlink = document.createElement("a");
+        viewHyperlink.classList.add("title");
         viewHyperlink.href = `/to_do_lists/${listElement.id}`;
         viewHyperlink.append(listElement.title);
         return viewHyperlink;
+    }
+
+    async sendEditedElementTitleToTheBackEnd(elementId, requestForm) {
+        requestForm.append("to_do_list_id", elementId);
+        return await this.fetchWithShowingErrorToUser(
+            "/api/to_do_lists/rename/", {
+                method: "POST",
+                body: requestForm,
+            }
+        );
     }
 }
 

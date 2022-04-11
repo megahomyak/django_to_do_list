@@ -1,8 +1,12 @@
 {% extends 'generic_page.html' %}
-{% block contents %}
 {% load static %}
+{% block head %}
+<link rel="stylesheet" href="{% static 'frontend_app/accessible_to_do_list_styles.css' %}">
+{% endblock %}
+{% block contents %}
 <h1>{{ title }}</h1>
+<p>You can drag-and-drop elements!</p>
 {% include 'frontend_app/generic_list.html' %}
 <script>let toDoListId = {{ to_do_list_id }};</script>
-<script src="{% static 'accessible_to_do_list.js' %}"></script>
+<script src="{% static 'frontend_app/accessible_to_do_list.js' %}"></script>
 {% endblock %}
